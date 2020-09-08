@@ -1,0 +1,69 @@
+{% extends "basic.html" %}
+{% block title %}
+交易汇总
+{% endblock %}
+
+{% block content %}
+{% for mess in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <button type="button" class=" fade close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <strong>{{ mess }}</strong> 
+</div>
+{% endfor %}
+<br>
+<h3>请建立一笔交易来测算资金成本，您也可以通过浏览过往交易来更新IRR测算</h3>
+<br>
+<a href="{{ url_for('irr_calculators.trade_create')}}"><button type="button" class="btn btn-primary" >创建新交易</button></a>
+<br>
+<div>
+    <br>
+    <h3>历史交易明细如下：</h3>
+    <br>
+</div>
+<div class="jumbotron">
+  <div class="table-responsive-md">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">金额</th>
+          <th scope="col">期数</th>
+          <th scope="col">首付款</th>
+          <th scope="col">保证金</th>
+          <th scope="col">费用</th>
+          <th scope="col">平利</th>            
+          <th scope="col">还款方式</th>
+          <th scope="col">还款间隙</th>
+          <th scope="col">XIRR</th>
+          <th scope="col">连续复利IRR</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for tran in trans %}
+        <tr>
+          <th scope="row">{{ tran.id }}</th>
+          <td>{{ tran.equip_amount }}</td>
+          <td>{{ tran.rent_period }}</td>
+          <td>{{ tran.downpayment }}</td>
+          <td>{{ tran.deposit }}</td>
+          <td>{{ tran.fee }}</td>
+          <td>{{ tran.flat_rate*100 }}%</td>            
+          <td>{{ tran.payment_type }}</td>
+          <td>{{ tran.payment_period }}</td>
+          <td>{{ tran.irr_nor }}%/年</td>
+          <td>{{ tran.irr_exp }}%/年</td>          
+          <td><a href="{{ url_for('irr_calculators.irr_cashflows', trade_id=tran.id) }}" ><button type="button" class="btn btn-primary btn-sm">测算</button></a></td>
+          <td><a href="{{ url_for('irr_calculators.trade_update', trade_id=tran.id) }}" ><button type="button" class="btn btn-primary btn-sm">更新</button></a></td>
+          <td><a href="{{ url_for('irr_calculators.trade_delete', trade_id=tran.id) }}" ><button type="button" class="btn btn-danger btn-sm">删除</button></a></td>
+          
+        </tr>
+
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

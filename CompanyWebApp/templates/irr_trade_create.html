@@ -1,0 +1,62 @@
+{% extends "basic.html" %}
+{% block title %}
+管理交易
+{% endblock %}
+{% block content %}
+{% for mess in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <button type="button" class=" fade close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <strong>{{ mess }}</strong> 
+</div>
+{% endfor %}
+<br>
+<div class="jumbotron">
+  <h3>添加/更新交易</h3>
+    <form method="POST">
+      {{ form.hidden_tag() }}
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          {{form.equip_amount.label}}
+          {{form.equip_amount(class="form-control", placeholder="输入设备金额 整数")}}
+        </div>
+        <div class="form-group col-md-6">
+          {{form.rent_period.label}}
+          {{form.rent_period(class="form-control", placeholder="输入租金期数 整数")}}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          {{form.downpayment.label}}
+          {{form.downpayment(class="form-control", placeholder="输入首付款 整数")}}
+        </div>
+        <div class="form-group col-md-6">
+          {{form.deposit.label}}
+          {{form.deposit(class="form-control", placeholder="输入保证金 整数")}}
+        </div>  
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          {{form.fee.label}}
+          {{form.fee(class="form-control", placeholder="输入其他费用 整数")}}
+        </div>
+        <div class="form-group col-md-6">
+          {{form.flat_rate.label}}
+          {{form.flat_rate(class="form-control", placeholder="输入平面年利率 小数")}}
+        </div>  
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          {{form.payment_type.label}}
+          {{form.payment_type(class="form-control", placeholder="")}}
+        </div>
+        <div class="form-group col-md-6">
+          {{form.payment_period.label}}
+          {{form.payment_period(class="form-control", placeholder="")}}
+        </div>  
+      </div>
+      {{ form.submit(class="btn btn-primary")}}
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "basic.html" %}
+{% block title %}
+IRR测算
+{% endblock %}
+{% block content %}
+{% for mess in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <button type="button" class=" fade close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <strong>{{ mess }}</strong> 
+</div>
+{% endfor %}
+   
+    <div class="jumbotron">
+      <h3> {{trade_id}} 号交易 </h3>
+      <br>
+      <div class="row">
+        <div class="col-md-3">
+          <h5><strong>设备金额:</strong></h5>
+        </div>
+        <div class="col-md-3">
+          <h5>{{trade.equip_amount}} 元 </h5>
+        </div>
+        <div class="col-md-3">
+          <h5><strong>首付款:</strong></h5>
+        </div>
+        <div class="col-md-3">
+          <h5>{{trade.downpayment}} 元 </h5>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <h5><strong>保证金:</strong> </h5>
+        </div>
+        <div class="col-md-3">
+          <h5>{{trade.deposit}} 元 </h5>
+        </div>
+        <div class="col-md-3">
+          <h5><strong>费用: </strong></h5>
+        </div>
+        <div class="col-md-3">
+          <h5>{{trade.fee}} 元 </h5>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <h5><strong>租金期数: </strong></h5>
+        </div>
+        <div class="col-md-3">
+          <h5>{{trade.rent_period}} 期 </h5>
+        </div>
+        <div class="col-md-3">
+          <h5><strong>付款方式:</strong></h5>
+        </div>
+        <div class="col-md-3">
+          <h5>{{trade.payment_type}}  </h5>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <h5><strong>付款间隙: </strong></h5>
+        </div>
+        <div class="col-md-3">
+          <h5>{{trade.payment_period}}  </h5>
+        </div>
+        <div class="col-md-3">
+          <h5><strong>平面利息: </strong></h5>
+        </div>
+        <div class="col-md-3">
+          <h5>{{trade.flat_rate*100}}%/年</h5>
+        </div>
+      </div>
+      <br>
+      <p>请确认起租日与租金支付时间，来更新现金流计划</p>
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            {{form.lease_date.label}}
+            {{form.lease_date(class="form-control", placeholder="")}}
+          </div>
+          <div class="form-group col-md-4">
+            {{form.period_end_or_beg.label}}
+            {{form.period_end_or_beg(class="form-control", placeholder="")}}
+          </div>
+          <div class="form-group col-md-4">
+            {{form.basic_rent.label}}
+            {{form.basic_rent(class="form-control", placeholder="")}}
+          </div>
+        </div>
+        {{ form.submit(class="btn btn-primary btn-sm")}}
+      </form>
+      <br>
+        <h3> 详细现金流计划如下： </h3>
+        <p>点击更新/删除来调整单项现金流</p>
+        <p>添加现金流</p>
+        <a href="{{ url_for('irr_calculators.cashflow_create', trade_id=trade_id)}}"><button type="button" class="btn btn-primary btn-sm">添加现金流</button></a>
+        <br>
+        <br>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">日期</th>
+                <th scope="col">款项性质</th>
+                <th scope="col">金额</th>
+                <th scope="col">流入/出</th>
+                <th scope="col">税额</th>
+                <th scope="col">不含税金额</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cashflow in cashflows %}
+              <tr>
+                <th scope="row">{{ loop.index }}</th>
+                <td>{{ cashflow.date }}</td>
+                <td>{{ cashflow.cashflow_nature }}</td>
+                <td>{{ cashflow.cashflow_amount }}</td>
+                <td>{{ cashflow.cashflow_type }}</td>
+                <td>{{ cashflow.cashflow_tax }}</td>
+                <td>{{ cashflow.cashflow_amount-cashflow.cashflow_tax }}</td>
+                <td><a href="{{ url_for('irr_calculators.cashflow_update', cashflow_id=cashflow.id )}}"> <button type="button" class="btn btn-primary btn-sm">更新</button></a></td>
+                <td><a href="{{ url_for('irr_calculators.cashflow_delete', cashflow_id=cashflow.id )}}"> <button type="button" class="btn btn-danger btn-sm">删除</button></a></td>
+              </tr>
+              {% endfor %}
+              
+            </tbody>
+          </table>
+          <br>
+          <form action="{{url_for('irr_calculators.calculate_irr', trade_id=trade_id)}}" method="POST">
+            <button type="submit" class="btn btn-primary" >测算资金成本</button>
+          </form>
+          
+          <br>
+          <table class="table table-borderless">
+
+            <tbody>
+              <tr>
+                <th scope="row"> {{trade.id}} 号交易的XIRR为：</th>
+                <td><strong>{{ XIRR }}%/年</strong></td>
+              </tr>
+              <tr>
+                <th scope="row"> {{trade_id}} 号交易的连续复利IRR为：</th>
+                <td><strong>{{ EIRR }}%/年</strong></td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
+
+
+{% endblock %}

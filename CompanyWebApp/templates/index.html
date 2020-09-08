@@ -1,0 +1,52 @@
+{% extends "basic.html" %}
+{% block title %}
+贵安首页
+{% endblock %}
+{% block content %}
+{% for mess in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <button type="button" class=" fade close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <strong>{{ mess }}</strong> 
+</div>
+{% endfor %}
+<br>
+<div align='center'>
+  <h2><strong>欢迎来到贵安恒信！</strong></h2>
+</div>
+<br>
+<img src="../static/shanghai.jpg" class="img-fluid" alt="Responsive image">
+<br>
+<div class="container">
+  <br>
+  <div align='center'>
+    <h3><strong>公司博客</strong></h3>
+  </div>
+  <br>
+  {% for post in blog_posts.items %}
+      <div class="card">
+          <div class="card-body">
+              <h2><a class="card-title"  href=" {{url_for('blog_posts.blog_post', blog_post_id = post.id)}}  ">{{ post.title }}</a></h2>
+              <a href=" {{url_for('users.user_posts', username=post.author.username)}} "> 作者: {{post.author.username}} </a>
+              <p>发表于: {{post.date.strftime('%Y-%m-%d')}} </p>
+              <a class="btn btn-primary"  href="{{ url_for('blog_posts.blog_post', blog_post_id=post.id) }}"><strong>阅读此条博文</strong></a>
+          </div>
+      </div>
+  {% endfor %}
+</div>
+<br>
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+      {% for page_num in blog_posts.iter_pages(left_edge=1,right_edge=1,left_current=1,right_current=2) %}
+          {% if blog_posts.page == page_num %}
+              <li class="page-item disabled">
+                  <a class="page-link" href="{{url_for('core.index', page = page_num) }}">{{ page_num }}</a>
+              </li>
+          {% else %}
+              <li class="page-item">
+                  <a class="page-link" href="{{url_for('core.index', page = page_num) }}">{{ page_num }}</a>
+              </li>
+          {% endif %}
+      {% endfor %}
+{% endblock %}
